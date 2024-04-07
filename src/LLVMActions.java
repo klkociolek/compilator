@@ -31,11 +31,37 @@ public class LLVMActions extends CompilatorBaseListener {
             LLVMGenerator.declare_double(ID);
             LLVMGenerator.assign_double(ID, v.name);
         }
-        if( v.type == VarType.STRING ){
-            LLVMGenerator.declare_string(ID);
-            LLVMGenerator.assign_string(ID, v.name);
-        }
+        //if( v.type == VarType.STRING ){
+        //    LLVMGenerator.declare_string(ID);
+        //    LLVMGenerator.assign_string(ID, v.name);
+        //}
     }
+
+    //@Override
+    //public void exitString(LangXParser.ValueContext ctx) {
+    //    if( ctx.ID() != null ){
+    //        String ID = ctx.ID().getText();
+    //        if( variables.containsKey(ID) ) {
+    //            Value v = variables.get( ID );
+    //            if( v.type == VarType.STRING ){
+    //                LLVMGenerator.load_string( ID );
+    //            }
+    //            stack.push( new Value("%"+(LLVMGenerator.reg-1), v.type, v.length));
+    //        } else {
+    //            error(ctx.getStart().getLine(), "unknown variable "+ID);
+    //        }
+    //    }
+    //    if( ctx.INT() != null ){
+    //        stack.push( new Value(ctx.INT().getText(), VarType.INT, 0) );
+    //    }
+    //    if( ctx.STRING() != null ){
+    //        String tmp = ctx.STRING().getText();
+    //        String content = tmp.substring(1, tmp.length()-1);
+    //        LLVMGenerator.constant_string(content);
+    //        String n = "ptrstr"+(LLVMGenerator.str-1);
+    //        stack.push( new Value(n, VarType.STRING, content.length()) );
+    //    }
+    //}
 
     @Override
     public void exitProg(CompilatorParser.ProgContext ctx) {
@@ -52,10 +78,6 @@ public class LLVMActions extends CompilatorBaseListener {
         stack.push( new Value(ctx.REAL().getText(), VarType.REAL) );
     }
 
-    @Override
-    public void exitStri(CompilatorParser.StriContext ctx) {
-        stack.push( new Value(ctx.STRING().getText(), VarType.STRING) );
-    }
 
     @Override
     public void exitAdd(CompilatorParser.AddContext ctx) {
@@ -71,7 +93,7 @@ public class LLVMActions extends CompilatorBaseListener {
                 stack.push( new Value("%"+(LLVMGenerator.reg-1), VarType.REAL) );
             }
         } else {
-            error(ctx.getStart().getLine(), "add type mismatch");
+            error(ctx.getStart().getLine(), "type mismatch");
         }
     }
 
@@ -89,7 +111,7 @@ public class LLVMActions extends CompilatorBaseListener {
                 stack.push( new Value("%"+(LLVMGenerator.reg-1), VarType.REAL) );
             }
         } else {
-            error(ctx.getStart().getLine(), "add type mismatch");
+            error(ctx.getStart().getLine(), "type mismatch");
         }
     }
 
@@ -107,7 +129,7 @@ public class LLVMActions extends CompilatorBaseListener {
                 stack.push( new Value("%"+(LLVMGenerator.reg-1), VarType.REAL) );
             }
         } else {
-            error(ctx.getStart().getLine(), "mult type mismatch");
+            error(ctx.getStart().getLine(), "type mismatch");
         }
     }
 
@@ -125,7 +147,7 @@ public class LLVMActions extends CompilatorBaseListener {
                 stack.push( new Value("%"+(LLVMGenerator.reg-1), VarType.REAL) );
             }
         } else {
-            error(ctx.getStart().getLine(), "mult type mismatch");
+            error(ctx.getStart().getLine(), "type mismatch");
         }
     }
 

@@ -29,6 +29,54 @@ public interface CompilatorListener extends ParseTreeListener {
 	 */
 	void exitWrite(CompilatorParser.WriteContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code arrayint}
+	 * labeled alternative in {@link CompilatorParser#stat}.
+	 * @param ctx the parse tree
+	 */
+	void enterArrayint(CompilatorParser.ArrayintContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code arrayint}
+	 * labeled alternative in {@link CompilatorParser#stat}.
+	 * @param ctx the parse tree
+	 */
+	void exitArrayint(CompilatorParser.ArrayintContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code arrayreal}
+	 * labeled alternative in {@link CompilatorParser#stat}.
+	 * @param ctx the parse tree
+	 */
+	void enterArrayreal(CompilatorParser.ArrayrealContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code arrayreal}
+	 * labeled alternative in {@link CompilatorParser#stat}.
+	 * @param ctx the parse tree
+	 */
+	void exitArrayreal(CompilatorParser.ArrayrealContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code arraystring}
+	 * labeled alternative in {@link CompilatorParser#stat}.
+	 * @param ctx the parse tree
+	 */
+	void enterArraystring(CompilatorParser.ArraystringContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code arraystring}
+	 * labeled alternative in {@link CompilatorParser#stat}.
+	 * @param ctx the parse tree
+	 */
+	void exitArraystring(CompilatorParser.ArraystringContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code string}
+	 * labeled alternative in {@link CompilatorParser#stat}.
+	 * @param ctx the parse tree
+	 */
+	void enterString(CompilatorParser.StringContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code string}
+	 * labeled alternative in {@link CompilatorParser#stat}.
+	 * @param ctx the parse tree
+	 */
+	void exitString(CompilatorParser.StringContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code print}
 	 * labeled alternative in {@link CompilatorParser#stat}.
 	 * @param ctx the parse tree
@@ -64,18 +112,6 @@ public interface CompilatorListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitSingle0(CompilatorParser.Single0Context ctx);
-	/**
-	 * Enter a parse tree produced by the {@code stri}
-	 * labeled alternative in {@link CompilatorParser#expr0}.
-	 * @param ctx the parse tree
-	 */
-	void enterStri(CompilatorParser.StriContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code stri}
-	 * labeled alternative in {@link CompilatorParser#expr0}.
-	 * @param ctx the parse tree
-	 */
-	void exitStri(CompilatorParser.StriContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code add}
 	 * labeled alternative in {@link CompilatorParser#expr0}.
@@ -196,4 +232,34 @@ public interface CompilatorListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitPar(CompilatorParser.ParContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CompilatorParser#array_int}.
+	 * @param ctx the parse tree
+	 */
+	void enterArray_int(CompilatorParser.Array_intContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CompilatorParser#array_int}.
+	 * @param ctx the parse tree
+	 */
+	void exitArray_int(CompilatorParser.Array_intContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CompilatorParser#array_real}.
+	 * @param ctx the parse tree
+	 */
+	void enterArray_real(CompilatorParser.Array_realContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CompilatorParser#array_real}.
+	 * @param ctx the parse tree
+	 */
+	void exitArray_real(CompilatorParser.Array_realContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CompilatorParser#array_string}.
+	 * @param ctx the parse tree
+	 */
+	void enterArray_string(CompilatorParser.Array_stringContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CompilatorParser#array_string}.
+	 * @param ctx the parse tree
+	 */
+	void exitArray_string(CompilatorParser.Array_stringContext ctx);
 }

@@ -1,13 +1,16 @@
 grammar Compilator;
 prog: ( stat? NEWLINE )* ;
 
-stat: ID '=' expr0 #write
-    | PRINT ID      #print
-    | READ ID      #read
-    ;
+stat: ID '=' expr0          #write
+    | ID '=' array_int      #arrayint
+    | ID '=' array_real     #arrayreal
+    | ID '=' array_string   #arraystring
+    | ID '=' STRING         #string
+    | PRINT ID              #print
+    | READ ID               #read
+;
 
 expr0:  expr1			    #single0
-      | STRING              #stri
       | expr1 ADD expr1	    #add
       | expr1 SUB expr1	    #sub
 ;
@@ -23,6 +26,9 @@ expr2:   INT			    #int
        | TOREAL expr2		#toreal
        | '(' expr0 ')'		#par
 ;
+array_int: '[' INT ( ',' INT )* ']';
+array_real: '[' REAL ( ',' REAL )* ']';
+array_string: '[' STRING ( ',' STRING )* ']';
 
 PRINT:	'print ';
 READ: 'read ';

@@ -1,6 +1,9 @@
 
 import java.util.HashMap;
 import java.util.Stack;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 enum VarType{ INT,REAL, STRING, UNKNOWN }
 
@@ -80,7 +83,8 @@ public class LLVMActions extends CompilatorBaseListener {
             String content = tmp.substring(1, tmp.length()-1);
             LLVMGenerator.constant_string(content);
             String n = "ptrstr"+(LLVMGenerator.str-1);
-            stack.push( new Value(n, VarType.STRING, content.length()) );
+//            stack.push( new Value(n, VarType.STRING, content.length()) );
+            stack.push( new Value("%"+(LLVMGenerator.reg-1), VarType.STRING, content.length())); // added to a="a" + "b"
         }
     }
 
@@ -98,7 +102,7 @@ public class LLVMActions extends CompilatorBaseListener {
                 stack.push( new Value("%"+(LLVMGenerator.reg-1), VarType.REAL,0) );
             }
             if( v1.type==VarType.STRING ){
-                LLVMGenerator.add_string(v1.name, v1.length, v2.name, v2.length);
+                LLVMGenerator.add_string( v2.name, v2.length,v1.name, v1.length); // to add in good order
                 Value v = new Value("%"+(LLVMGenerator.reg-3), VarType.STRING, v1.length);
                 stack.push(v);
             }
@@ -164,7 +168,15 @@ public class LLVMActions extends CompilatorBaseListener {
 
     @Override
     public void exitProg(CompilatorParser.ProgContext ctx) {
-        System.out.println( LLVMGenerator.generate() );
+        String llvmCode = LLVMGenerator.generate();
+        System.out.println(llvmCode);
+        String filePath = "output.ll";
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            writer.write(llvmCode);
+            System.out.println("Successfully wrote LLVM code to " + filePath);
+        } catch (IOException e) {
+            System.err.println("An error occurred while writing to file: " + e.getMessage());
+        }
     }
 
     @Override

@@ -1,7 +1,4 @@
-read x
+read a
 read b
-x=2
-x="ala"
-ab=2.0*3.0
-print x
-
+z=a+b
+print z

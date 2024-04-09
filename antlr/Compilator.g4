@@ -1,46 +1,40 @@
 grammar Compilator;
-prog: ( stat? NEWLINE )* ;
-
-stat: ID '=' expr0          #write
-    | ID '=' array_int      #arrayint
-    | ID '=' array_real     #arrayreal
-    | ID '=' array_string   #arraystring
-    | ID '=' STRING         #string
-    | PRINT ID              #print
-    | READ ID               #read
+prog: ( stat? NEWLINE )*
 ;
 
-expr0:  expr1			    #single0
-      | expr1 ADD expr1	    #add
-      | expr1 SUB expr1	    #sub
+stat:	WRITE ID		#write
+	| READ ID   		#read
+ 	| ID '=' expr0      #assign0
+;
+expr0:  expr1			        #single0
+      | expr1 ADD expr0	    #add
+      | expr1 SUB expr0	    #sub
 ;
 
-expr1:  expr2			    #single1
-      | expr2 MULT expr2	#mult
-      | expr2 DIV expr2	    #div
+expr1:  expr2			        #single1
+      | expr2 MULT expr1	    #mult
+      | expr2 DIV expr1         #div
 ;
 
-expr2:   INT			    #int
-       | REAL			    #real
-       | TOINT expr2		#toint
-       | TOREAL expr2		#toreal
+expr2:   value              #val
        | '(' expr0 ')'		#par
 ;
-array_int: '[' INT ( ',' INT )* ']';
-array_real: '[' REAL ( ',' REAL )* ']';
-array_string: '[' STRING ( ',' STRING )* ']';
 
-PRINT:	'print ';
-READ: 'read ';
-TOINT: '(int)';
-TOREAL: '(real)';
+value: ID
+       | INT
+       | STRING
+       | REAL
+;
+
+WRITE:	'print ';
+READ:	'read ' ;
+ID:   ('a'..'z'|'A'..'Z')+;
+REAL: '0'..'9'+'.''0'..'9'+;
+INT:   '0'..'9'+;
 ADD: '+';
 SUB: '-';
 MULT: '*';
 DIV: '/';
-REAL: '0'..'9'+'.''0'..'9'+;
-INT: '0'..'9'+;
-ID:   ('a'..'z'|'A'..'Z')+;
 STRING :  '"' ( ~('\\'|'"') )* '"';
 NEWLINE:	'\r'? '\n';
 WS:   (' '|'\t')+ { skip(); };

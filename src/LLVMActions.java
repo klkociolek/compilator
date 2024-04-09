@@ -188,13 +188,32 @@ public class LLVMActions extends CompilatorBaseListener {
         }
     }
 
+
     @Override
-    public void exitRead(CompilatorParser.ReadContext ctx) {
+    public void exitReadstring(CompilatorParser.ReadstringContext ctx) {
         String ID = ctx.ID().getText();
         Value v = new Value(ID, VarType.STRING, BUFFER_SIZE-1);
         variables.put(ID, v);
-        LLVMGenerator.scanf(ID, BUFFER_SIZE);
+        LLVMGenerator.scanfstring(ID, BUFFER_SIZE);
     }
+
+
+    @Override
+    public void exitReadint(CompilatorParser.ReadintContext ctx) {
+        String ID = ctx.ID().getText();
+        Value v = new Value(ID, VarType.INT, 0);
+        variables.put(ID, v);
+        LLVMGenerator.scanfint(ID);
+    }
+
+    @Override
+    public void exitReadreal(CompilatorParser.ReadrealContext ctx) {
+        String ID = ctx.ID().getText();
+        Value v = new Value(ID, VarType.REAL, 0);
+        variables.put(ID, v);
+        LLVMGenerator.scanfreal(ID);
+    }
+
 
     void error(int line, String msg){
         System.err.println("Error, line "+line+", "+msg);

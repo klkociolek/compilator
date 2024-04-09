@@ -40,13 +40,37 @@ public class CompilatorBaseListener implements CompilatorListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterRead(CompilatorParser.ReadContext ctx) { }
+	@Override public void enterReadstring(CompilatorParser.ReadstringContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitRead(CompilatorParser.ReadContext ctx) { }
+	@Override public void exitReadstring(CompilatorParser.ReadstringContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterReadint(CompilatorParser.ReadintContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitReadint(CompilatorParser.ReadintContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterReadreal(CompilatorParser.ReadrealContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitReadreal(CompilatorParser.ReadrealContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

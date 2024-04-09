@@ -2,13 +2,15 @@ grammar Compilator;
 prog: ( stat? NEWLINE )*
 ;
 
-stat:	WRITE ID		#write
-	| READ ID   		#read
- 	| ID '=' expr0      #assign0
+stat:	WRITE ID		    #write
+	| READSTRING ID   		#readstring
+	| READINT ID   		    #readint
+	| READREAL ID   		#readreal
+ 	| ID '=' expr0          #assign0
 ;
 expr0:  expr1			        #single0
-      | expr1 ADD expr0	    #add
-      | expr1 SUB expr0	    #sub
+      | expr1 ADD expr0	        #add
+      | expr1 SUB expr0	        #sub
 ;
 
 expr1:  expr2			        #single1
@@ -27,7 +29,9 @@ value: ID
 ;
 
 WRITE:	'print ';
-READ:	'read ' ;
+READREAL:	'readr ' ;
+READINT:	'readi ' ;
+READSTRING:	'reads ' ;
 ID:   ('a'..'z'|'A'..'Z')+;
 REAL: '0'..'9'+'.''0'..'9'+;
 INT:   '0'..'9'+;

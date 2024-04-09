@@ -26,7 +26,7 @@ class LLVMGenerator{
         reg++;
     }
 
-    static void scanf(String id, int l){
+    static void scanfstring(String id, int l){
         allocate_string("str"+str, l);
         main_text += "%"+id+" = alloca i8*\n";
         main_text += "%"+reg+" = getelementptr inbounds ["+(l+1)+" x i8], ["+(l+1)+" x i8]* %str"+str+", i64 0, i64 0\n";
@@ -34,6 +34,18 @@ class LLVMGenerator{
         main_text += "store i8* %"+(reg-1)+", i8** %"+id+"\n";
         str++;
         main_text += "%"+reg+" = call i32 (i8*, ...) @scanf(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @strs, i32 0, i32 0), i8* %"+(reg-1)+")\n";
+        reg++;
+    }
+
+    static void scanfint(String id){
+        main_text += "%"+id+" = alloca i32\n";
+        main_text += "%"+reg+" = call i32 (i8*, ...) @scanf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @strspi, i32 0, i32 0), i32* %"+id+")\n";
+        reg++;
+    }
+
+    static void scanfreal(String id){
+        main_text += "%"+id+" = alloca double\n";
+        main_text += "%"+reg+" = call i32 (i8*, ...) @scanf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strspd, i32 0, i32 0), double* %"+id+")\n";
         reg++;
     }
 
@@ -152,6 +164,11 @@ class LLVMGenerator{
         str++;
     }
 
+    static void string_to_int(String in){
+        main_text += "%"+reg+" = call i32 @atoi(i8* "+in+")\n";
+        reg++;
+    }
+
     static String generate(){
         String text = "";
         text += "declare i32 @printf(i8*, ...)\n";
@@ -159,10 +176,11 @@ class LLVMGenerator{
         text += "declare i8* @strcpy(i8*, i8*)\n";
         text += "declare i8* @strcat(i8*, i8*)\n";
         text += "declare i32 @atoi(i8*)\n";
-        text += "declare i32 @scanf(i8*, ...)";
+        text += "declare i32 @scanf(i8*, ...)\n";
         text += "declare void @llvm.memcpy.p0i8.p0i8.i64(i8* noalias nocapture writeonly, i8* noalias nocapture readonly, i64, i1 immarg)\n";
         text += "@strps = constant [4 x i8] c\"%s\\0A\\00\"\n";
         text += "@strpd = constant [4 x i8] c\"%f\\0A\\00\"\n";
+        text += "@strspd = constant [4 x i8] c\"%lf\\00\"\n";
         text += "@strpi = constant [4 x i8] c\"%d\\0A\\00\"\n";
         text += "@strs = constant [5 x i8] c\"%10s\\00\"\n";
         text += "@strspi = constant [3 x i8] c\"%d\\00\"\n";

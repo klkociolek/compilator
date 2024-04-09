@@ -29,17 +29,41 @@ public interface CompilatorListener extends ParseTreeListener {
 	 */
 	void exitWrite(CompilatorParser.WriteContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code read}
+	 * Enter a parse tree produced by the {@code readstring}
 	 * labeled alternative in {@link CompilatorParser#stat}.
 	 * @param ctx the parse tree
 	 */
-	void enterRead(CompilatorParser.ReadContext ctx);
+	void enterReadstring(CompilatorParser.ReadstringContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code read}
+	 * Exit a parse tree produced by the {@code readstring}
 	 * labeled alternative in {@link CompilatorParser#stat}.
 	 * @param ctx the parse tree
 	 */
-	void exitRead(CompilatorParser.ReadContext ctx);
+	void exitReadstring(CompilatorParser.ReadstringContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code readint}
+	 * labeled alternative in {@link CompilatorParser#stat}.
+	 * @param ctx the parse tree
+	 */
+	void enterReadint(CompilatorParser.ReadintContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code readint}
+	 * labeled alternative in {@link CompilatorParser#stat}.
+	 * @param ctx the parse tree
+	 */
+	void exitReadint(CompilatorParser.ReadintContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code readreal}
+	 * labeled alternative in {@link CompilatorParser#stat}.
+	 * @param ctx the parse tree
+	 */
+	void enterReadreal(CompilatorParser.ReadrealContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code readreal}
+	 * labeled alternative in {@link CompilatorParser#stat}.
+	 * @param ctx the parse tree
+	 */
+	void exitReadreal(CompilatorParser.ReadrealContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code assign0}
 	 * labeled alternative in {@link CompilatorParser#stat}.

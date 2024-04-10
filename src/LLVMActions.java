@@ -31,7 +31,7 @@ public class LLVMActions extends CompilatorBaseListener {
         Value v = stack.pop();
         if( !variables.containsKey(ID) ) {
             variables.put(ID, v);
-            if( v.type == VarType.INT ){
+            if( v.type == VarType.INT ) {
                 LLVMGenerator.declare_int(ID);
             }
             if( v.type == VarType.REAL ){
@@ -40,6 +40,8 @@ public class LLVMActions extends CompilatorBaseListener {
             if( v.type == VarType.STRING ){
                 LLVMGenerator.declare_string(ID);
             }
+        } else if (v.type != variables.get(ID).type ) {
+            error(ctx.start.getLine(),"Reassignment of a variable is only possible for the same type");
         }
         if( v.type == VarType.INT ){
             LLVMGenerator.assign_int(ID, v.name);
@@ -49,7 +51,7 @@ public class LLVMActions extends CompilatorBaseListener {
         }
         if( v.type == VarType.STRING ){
             LLVMGenerator.assign_string(ID);
-        }
+       }
     }
 
     @Override
@@ -82,7 +84,7 @@ public class LLVMActions extends CompilatorBaseListener {
             String tmp = ctx.STRING().getText();
             String content = tmp.substring(1, tmp.length()-1);
             LLVMGenerator.constant_string(content);
-            String n = "ptrstr"+(LLVMGenerator.str-1);
+//            String n = "ptrstr"+(LLVMGenerator.str-1);
 //            stack.push( new Value(n, VarType.STRING, content.length()) );
             stack.push( new Value("%"+(LLVMGenerator.reg-1), VarType.STRING, content.length())); // added to a="a" + "b"
         }
@@ -204,26 +206,26 @@ public class LLVMActions extends CompilatorBaseListener {
     @Override
     public void exitReadstring(CompilatorParser.ReadstringContext ctx) {
         String ID = ctx.ID().getText();
-        Value v = new Value(ID, VarType.STRING, BUFFER_SIZE-1);
-        variables.put(ID, v);
+//        Value v = new Value(ID, VarType.STRING, BUFFER_SIZE-1);
         LLVMGenerator.scanfstring(ID, BUFFER_SIZE);
-    }
-
+        Value v = new Value("%"+(LLVMGenerator.reg-1), VarType.STRING, BUFFER_SIZE-1); // declaration should be after LLVMGenerator
+        variables.put(ID, v);
+   }
 
     @Override
     public void exitReadint(CompilatorParser.ReadintContext ctx) {
         String ID = ctx.ID().getText();
-        Value v = new Value(ID, VarType.INT, 0);
-        variables.put(ID, v);
         LLVMGenerator.scanfint(ID);
+        Value v = new Value("%"+(LLVMGenerator.reg-1), VarType.INT, 0);
+        variables.put(ID, v);
     }
 
     @Override
     public void exitReadreal(CompilatorParser.ReadrealContext ctx) {
         String ID = ctx.ID().getText();
-        Value v = new Value(ID, VarType.REAL, 0);
-        variables.put(ID, v);
         LLVMGenerator.scanfreal(ID);
+        Value v = new Value("%"+(LLVMGenerator.reg-1), VarType.REAL, 0);
+        variables.put(ID, v);
     }
 
 

@@ -25,10 +25,7 @@ public class LLVMActions extends CompilatorBaseListener {
 
     static int BUFFER_SIZE = 16;
 
-    @Override
-    public void exitAssign0(CompilatorParser.Assign0Context ctx) {
-        String ID = ctx.ID().getText();
-        Value v = stack.pop();
+    private void exitAssign0ByID(String ID, Value v, int line){
         if( !variables.containsKey(ID) ) {
             variables.put(ID, v);
             if( v.type == VarType.INT ) {
@@ -41,7 +38,7 @@ public class LLVMActions extends CompilatorBaseListener {
                 LLVMGenerator.declare_string(ID);
             }
         } else if (v.type != variables.get(ID).type ) {
-            error(ctx.start.getLine(),"Reassignment of a variable is only possible for the same type");
+            error(line,"Reassignment of a variable is only possible for the same type");
         }
         if( v.type == VarType.INT ){
             LLVMGenerator.assign_int(ID, v.name);
@@ -52,6 +49,13 @@ public class LLVMActions extends CompilatorBaseListener {
         if( v.type == VarType.STRING ){
             LLVMGenerator.assign_string(ID);
        }
+    }
+
+    @Override
+    public void exitAssign0(CompilatorParser.Assign0Context ctx) {
+        String ID = ctx.ID().getText();
+        Value v = stack.pop();
+        exitAssign0ByID(ID,v,ctx.start.getLine());
     }
 
     @Override
@@ -182,8 +186,21 @@ public class LLVMActions extends CompilatorBaseListener {
     }
 
     @Override
-    public void exitWrite(CompilatorParser.WriteContext ctx) {
-        String ID = ctx.ID().getText();
+    public void exitWrite(CompilatorParser.WriteContext exp) {
+        System.out.printf("test");
+        Value v1 = stack.pop();
+        String ID="";
+        if( v1.type == VarType.INT ){
+            ID = "tmpint";
+        } else if (v1.type == VarType.REAL ) {
+            ID = "tmpreal";
+        } else if (v1.type == VarType.STRING) {
+            ID = "tmpstr";
+        }else{
+            error(0, "unknown variable");
+        }
+        exitAssign0ByID(ID,v1,0); // to add line
+
         if( variables.containsKey(ID) ) {
             Value v = variables.get( ID );
             if( v.type != null ) {
@@ -197,8 +214,8 @@ public class LLVMActions extends CompilatorBaseListener {
                     LLVMGenerator.printf_string( ID );
                 }
             }
-        } else {
-            error(ctx.getStart().getLine(), "unknown variable");
+        }else{
+            error(0, "unknown variable");
         }
     }
 

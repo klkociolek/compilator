@@ -108,22 +108,6 @@ public class CompilatorLexer extends Lexer {
 	@Override
 	public ATN getATN() { return _ATN; }
 
-	@Override
-	public void action(RuleContext _localctx, int ruleIndex, int actionIndex) {
-		switch (ruleIndex) {
-		case 16:
-			WS_action((RuleContext)_localctx, actionIndex);
-			break;
-		}
-	}
-	private void WS_action(RuleContext _localctx, int actionIndex) {
-		switch (actionIndex) {
-		case 0:
-			 skip(); 
-			break;
-		}
-	}
-
 	public static final String _serializedATN =
 		"\u0004\u0000\u0011w\u0006\uffff\uffff\u0002\u0000\u0007\u0000\u0002\u0001"+
 		"\u0007\u0001\u0002\u0002\u0007\u0002\u0002\u0003\u0007\u0003\u0002\u0004"+
@@ -193,7 +177,7 @@ public class CompilatorLexer extends Lexer {
 		"\u0000\u0000\u0000pr\u0007\u0002\u0000\u0000qp\u0001\u0000\u0000\u0000"+
 		"rs\u0001\u0000\u0000\u0000sq\u0001\u0000\u0000\u0000st\u0001\u0000\u0000"+
 		"\u0000tu\u0001\u0000\u0000\u0000uv\u0006\u0010\u0000\u0000v\"\u0001\u0000"+
-		"\u0000\u0000\b\u0000HMSXfls\u0001\u0001\u0010\u0000";
+		"\u0000\u0000\b\u0000HMSXfls\u0001\u0006\u0000\u0000";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

@@ -207,7 +207,9 @@ public class CompilatorParser extends Parser {
 	@SuppressWarnings("CheckReturnValue")
 	public static class WriteContext extends StatContext {
 		public TerminalNode WRITE() { return getToken(CompilatorParser.WRITE, 0); }
-		public TerminalNode ID() { return getToken(CompilatorParser.ID, 0); }
+		public Expr0Context expr0() {
+			return getRuleContext(Expr0Context.class,0);
+		}
 		public WriteContext(StatContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
@@ -263,7 +265,7 @@ public class CompilatorParser extends Parser {
 				setState(21);
 				match(WRITE);
 				setState(22);
-				match(ID);
+				expr0();
 				}
 				break;
 			case READSTRING:
@@ -718,7 +720,7 @@ public class CompilatorParser extends Parser {
 		"\u0010\u0000\u0000\u0010\r\u0001\u0000\u0000\u0000\u0011\u0014\u0001\u0000"+
 		"\u0000\u0000\u0012\u0010\u0001\u0000\u0000\u0000\u0012\u0013\u0001\u0000"+
 		"\u0000\u0000\u0013\u0001\u0001\u0000\u0000\u0000\u0014\u0012\u0001\u0000"+
-		"\u0000\u0000\u0015\u0016\u0005\u0004\u0000\u0000\u0016!\u0005\b\u0000"+
+		"\u0000\u0000\u0015\u0016\u0005\u0004\u0000\u0000\u0016!\u0003\u0004\u0002"+
 		"\u0000\u0017\u0018\u0005\u0007\u0000\u0000\u0018!\u0005\b\u0000\u0000"+
 		"\u0019\u001a\u0005\u0006\u0000\u0000\u001a!\u0005\b\u0000\u0000\u001b"+
 		"\u001c\u0005\u0005\u0000\u0000\u001c!\u0005\b\u0000\u0000\u001d\u001e"+

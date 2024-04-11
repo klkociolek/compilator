@@ -1,6 +1,6 @@
-a="a"
-b="b"
-c=a+b
+a=1
+print a+2
+c="ala"
 print c
-z="a"+"b"
-print z
+print c + " lubi"
+print "ala"

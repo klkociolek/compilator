@@ -2,12 +2,13 @@ grammar Compilator;
 prog: ( stat? NEWLINE )*
 ;
 
-stat:	WRITE ID		    #write
-	| READSTRING ID   		#readstring
-	| READINT ID   		    #readint
-	| READREAL ID   		#readreal
- 	| ID '=' expr0          #assign0
+stat:	WRITE expr0		        #write
+	| READSTRING ID   		    #readstring
+	| READINT ID   		        #readint
+	| READREAL ID   		    #readreal
+ 	| ID '=' expr0              #assign0
 ;
+
 expr0:  expr1			        #single0
       | expr1 ADD expr0	        #add
       | expr1 SUB expr0	        #sub
@@ -18,8 +19,8 @@ expr1:  expr2			        #single1
       | expr2 DIV expr1         #div
 ;
 
-expr2:   value              #val
-       | '(' expr0 ')'		#par
+expr2:   value                  #val
+       | '(' expr0 ')'		    #par
 ;
 
 value: ID
@@ -41,4 +42,4 @@ MULT: '*';
 DIV: '/';
 STRING :  '"' ( ~('\\'|'"') )* '"';
 NEWLINE:	'\r'? '\n';
-WS:   (' '|'\t')+ { skip(); };
+WS:   (' '|'\t')+ -> skip;

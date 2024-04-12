@@ -25,6 +25,19 @@ class LLVMGenerator{
         main_text += "%"+reg+" = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpd, i32 0, i32 0), double %"+(reg-1)+")\n";
         reg++;
     }
+    static void printf_bool(String id){
+        main_text += "%" + reg + " = load i1, i1* %" + id + "\n";
+        int boolReg = reg;  // Store the register number of the loaded boolean
+        reg++;
+        // Convert i1 to i32 for printing purposes
+        main_text += "%" + reg + " = zext i1 %" + boolReg + " to i32\n";
+        int intReg = reg;  // Store the register number of the extended boolean
+        reg++;
+        // Call printf function to print the integer
+        main_text += "%" + reg + " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpi, i32 0, i32 0), i32 %" + intReg + ")\n";
+        reg++;
+    }
+
 
     static void scanfstring(String id, int l){
         allocate_string("str"+str, l);
@@ -62,6 +75,10 @@ class LLVMGenerator{
         main_text += "%"+id+" = alloca i8*\n";
     }
 
+    static void declare_bool(String id){
+        main_text += "%" + id + " = alloca i1\n";
+    }
+
     static void allocate_string(String id, int l){
         main_text += "%"+id+" = alloca ["+(l+1)+" x i8]\n";
     }
@@ -77,6 +94,18 @@ class LLVMGenerator{
     static void assign_string(String id){
         main_text += "store i8* %"+(reg-1)+", i8** %"+id+"\n";
     }
+
+static void assign_bool(String id, String value){
+//    if (!"0".equals(value) && !"1".equals(value)) {
+//        if (!isRegisteredBoolVariable(value)) {
+//            throw new IllegalArgumentException("Value must be '0', '1', or a registered boolean variable.");
+//        }
+//        main_text += "store i1 %" + value + ", i1* %" + id + "\n";
+//    } else {
+    main_text += "store i1 " + value + ", i1* %" + id + "\n";
+//    }
+}
+
 
     static void constant_string(String content){
         int l = content.length()+1;
@@ -149,6 +178,12 @@ class LLVMGenerator{
         reg++;
     }
 
+    static void load_bool(String id){
+    main_text += "%" + reg + " = load i1, i1* %" + id + "\n";
+    reg++;
+    }
+
+
     static void add_string(String id1, int l1, String id2, int l2){
         allocate_string("str"+str, l1+l2);
         main_text += "%ptrstr"+str+" = alloca i8*\n";
@@ -168,6 +203,32 @@ class LLVMGenerator{
         main_text += "%"+reg+" = call i32 @atoi(i8* "+in+")\n";
         reg++;
     }
+
+    static void and_boolean(String val1, String val2) {
+        // Generate LLVM IR code for the boolean AND operation
+       main_text += "%"+reg+" = and i1 "+val2+", "+val2+"\n";  // AND the results of the comparisons
+        reg++;
+    }
+
+    static void or_boolean(String val1, String val2) {
+        // Generate LLVM IR code for the boolean OR operation
+        main_text += "%" + reg + " = or i1 " + val1 + ", " + val2 + "\n";  // OR the results of the comparisons
+        reg++;
+    }
+
+
+    static void xor_boolean(String val1, String val2) {
+        // Generate LLVM IR code for the boolean XOR operation
+        main_text += "%" + reg + " = xor i1 " + val1 + ", " + val2 + "\n";  // XOR the results of the comparisons
+        reg++;
+    }
+
+    static void not_boolean(String val) {
+        // Generate LLVM IR code for the boolean NOT operation
+        main_text += "%" + reg + " = xor i1 " + val + ", true\n";  // NOT the result (XOR with true)
+        reg++;
+    }
+
 
     static String generate(){
         String text = "";

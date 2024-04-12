@@ -5,7 +5,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
-enum VarType{ INT,REAL, STRING, UNKNOWN }
+enum VarType{ INT,REAL, STRING, UNKNOWN, BOOL }
 
 class Value{
     public String name;
@@ -37,6 +37,9 @@ public class LLVMActions extends CompilatorBaseListener {
             if( v.type == VarType.STRING ){
                 LLVMGenerator.declare_string(ID);
             }
+            if ( v.type == VarType.BOOL ){
+                LLVMGenerator.declare_bool(ID);
+            }
         } else if (v.type != variables.get(ID).type ) {
             error(line,"Reassignment of a variable is only possible for the same type");
         }
@@ -49,6 +52,9 @@ public class LLVMActions extends CompilatorBaseListener {
         if( v.type == VarType.STRING ){
             LLVMGenerator.assign_string(ID);
        }
+        if( v.type == VarType.BOOL ){
+            LLVMGenerator.assign_bool(ID,v.name);
+       }
     }
 
     @Override
@@ -60,7 +66,7 @@ public class LLVMActions extends CompilatorBaseListener {
 
     @Override
     public void exitValue(CompilatorParser.ValueContext ctx) {
-        if( ctx.ID() != null ){
+        if (ctx.ID() != null && !"false".equals(ctx.ID().getText()) && !"true".equals(ctx.ID().getText())) {
             String ID = ctx.ID().getText();
             if( variables.containsKey(ID) ) {
                 Value v = variables.get( ID );
@@ -73,6 +79,9 @@ public class LLVMActions extends CompilatorBaseListener {
                 if( v.type == VarType.STRING ){
                     LLVMGenerator.load_string( ID );
                 }
+                if( v.type == VarType.BOOL ){
+                    LLVMGenerator.load_bool( ID );
+                }
                 stack.push( new Value("%"+(LLVMGenerator.reg-1), v.type, v.length));
             } else {
                 error(ctx.getStart().getLine(), "unknown variable "+ID);
@@ -83,6 +92,11 @@ public class LLVMActions extends CompilatorBaseListener {
         }
         if( ctx.REAL() != null ){
             stack.push( new Value(ctx.REAL().getText(), VarType.REAL, 0) );
+        }
+        if (ctx.ID() != null && ("false".equals(ctx.ID().getText()) || "true".equals(ctx.ID().getText()))) {
+            String boolVal = ctx.ID().getText();
+            String llvmBoolVal = boolVal.equals("true") ? "1" : "0";
+            stack.push(new Value(llvmBoolVal, VarType.BOOL, 0));
         }
         if( ctx.STRING() != null ){
             String tmp = ctx.STRING().getText();
@@ -187,20 +201,21 @@ public class LLVMActions extends CompilatorBaseListener {
 
     @Override
     public void exitWrite(CompilatorParser.WriteContext exp) {
-        System.out.printf("test");
         Value v1 = stack.pop();
         String ID="";
+        int line = exp.start.getLine();
         if( v1.type == VarType.INT ){
             ID = "tmpint";
         } else if (v1.type == VarType.REAL ) {
             ID = "tmpreal";
         } else if (v1.type == VarType.STRING) {
             ID = "tmpstr";
-        }else{
-            error(0, "unknown variable");
+        } else if (v1.type == VarType.BOOL) {
+            ID = "tmpBOOL";
+        } else{
+            error(line, "unknown variable");
         }
-        exitAssign0ByID(ID,v1,0); // to add line
-
+        exitAssign0ByID(ID,v1,line);
         if( variables.containsKey(ID) ) {
             Value v = variables.get( ID );
             if( v.type != null ) {
@@ -213,9 +228,12 @@ public class LLVMActions extends CompilatorBaseListener {
                 if( v.type == VarType.STRING ){
                     LLVMGenerator.printf_string( ID );
                 }
+                if( v.type == VarType.BOOL ){
+                    LLVMGenerator.printf_bool( ID );
+                }
             }
         }else{
-            error(0, "unknown variable");
+            error(line, "unknown variable");
         }
     }
 
@@ -243,6 +261,49 @@ public class LLVMActions extends CompilatorBaseListener {
         LLVMGenerator.scanfreal(ID);
         Value v = new Value("%"+(LLVMGenerator.reg-1), VarType.REAL, 0);
         variables.put(ID, v);
+    }
+
+    @Override
+    public void exitAnd(CompilatorParser.AndContext ctx) {
+        Value v1 = stack.pop(); // Right operand
+        Value v2 = stack.pop(); // Left operand
+        if (v1.type != VarType.BOOL || v2.type != VarType.BOOL) {
+            error(ctx.getStart().getLine(), "Logical AND requires boolean operands");
+        }
+        LLVMGenerator.and_boolean(v1.name, v2.name);
+        stack.push( new Value("%"+(LLVMGenerator.reg-1), VarType.BOOL,0) );
+    }
+
+    @Override
+    public void exitOr(CompilatorParser.OrContext ctx) {
+        Value v1 = stack.pop(); // Right operand
+        Value v2 = stack.pop(); // Left operand
+        if (v1.type != VarType.BOOL || v2.type != VarType.BOOL) {
+            error(ctx.getStart().getLine(), "Logical OR requires boolean operands");
+        }
+        LLVMGenerator.or_boolean(v1.name, v2.name);
+        stack.push(new Value("%"+(LLVMGenerator.reg-1), VarType.BOOL, 0));
+    }
+
+    @Override
+    public void exitXor(CompilatorParser.XorContext ctx) {
+        Value v1 = stack.pop(); // Right operand
+        Value v2 = stack.pop(); // Left operand
+        if (v1.type != VarType.BOOL || v2.type != VarType.BOOL) {
+            error(ctx.getStart().getLine(), "Logical XOR requires boolean operands");
+        }
+        LLVMGenerator.xor_boolean(v1.name, v2.name);
+        stack.push(new Value("%"+(LLVMGenerator.reg-1), VarType.BOOL, 0));
+    }
+
+    @Override
+    public void exitNeg(CompilatorParser.NegContext ctx) {
+        Value v = stack.pop(); // Operand
+        if (v.type != VarType.BOOL) {
+            error(ctx.getStart().getLine(), "Logical NOT requires a boolean operand");
+        }
+        LLVMGenerator.not_boolean(v.name);
+        stack.push(new Value("%"+(LLVMGenerator.reg-1), VarType.BOOL, 0));
     }
 
 

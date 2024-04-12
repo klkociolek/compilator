@@ -1,6 +1,7 @@
-a=1
-print a+2
-c="ala"
-print c
-print c + " lubi"
-print "ala"
+w=true
+x=false
+print x %% w
+print x || w
+print x ^ w
+print ! w
+

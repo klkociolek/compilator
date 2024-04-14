@@ -1,6 +1,8 @@
-a="a"
-b="b"
-c=a+b
-print c
-z="a"+"b"
-print z
+a=1
+function fun
+  x = 3
+  z=a+x
+  print z
+endfunction
+zosia=fun
+print zosia

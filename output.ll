@@ -11,13 +11,11 @@ declare void @llvm.memcpy.p0i8.p0i8.i64(i8* noalias nocapture writeonly, i8* noa
 @strpi = constant [4 x i8] c"%d\0A\00"
 @strs = constant [5 x i8] c"%10s\00"
 @strspi = constant [3 x i8] c"%d\00"
-@a = global i32 0
 define i32 @fun() {
 %x = alloca i32
-store i32 3, i32* %x
-%1 = load i32, i32* @a
+%1 = call i32 (i8*, ...) @scanf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @strspi, i32 0, i32 0), i32* %x)
 %2 = load i32, i32* %x
-%3 = add i32 %2, %1
+%3 = add i32 %2, 1
 %z = alloca i32
 store i32 %3, i32* %z
 %4 = load i32, i32* %z
@@ -28,6 +26,5 @@ store i32 0, i32* %fun
 ret i32 %6
 }
 define i32 @main(){
-store i32 1, i32* @a
 %1 = call i32 @fun()
 ret i32 0 }

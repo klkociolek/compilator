@@ -77,14 +77,12 @@ class LLVMGenerator{
     }
 
     static void scanfint(String id){
-        buffer += "%"+id+" = alloca i32\n";
-        buffer += "%"+reg+" = call i32 (i8*, ...) @scanf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @strspi, i32 0, i32 0), i32* %"+id+")\n";
+        buffer += "%"+reg+" = call i32 (i8*, ...) @scanf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @strspi, i32 0, i32 0), i32* "+id+")\n";
         reg++;
     }
 
     static void scanfreal(String id){
-        buffer += "%"+id+" = alloca double\n";
-        buffer += "%"+reg+" = call i32 (i8*, ...) @scanf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strspd, i32 0, i32 0), double* %"+id+")\n";
+        buffer += "%"+reg+" = call i32 (i8*, ...) @scanf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strspd, i32 0, i32 0), double* "+id+")\n";
         reg++;
     }
 

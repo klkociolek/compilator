@@ -1,8 +1,6 @@
-a=1
 function fun
-  x = 3
-  z=a+x
+  readi x
+  z=1+x
   print z
 endfunction
-zosia=fun
-print zosia
+fun

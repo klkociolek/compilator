@@ -326,11 +326,17 @@ public class LLVMActions extends CompilatorBaseListener {
             }
         }
         else if(functions.contains(ID) ) {
-            LLVMGenerator.printf_int(ID);
+            LLVMGenerator.call(ID);
         }
         else{
             error(1, "unknown variable");
         }
+    }
+
+    @Override
+    public void exitCall(CompilatorParser.CallContext ctx) {
+        String ID = ctx.ID().getText();
+        LLVMGenerator.call(ID);
     }
 
 
@@ -346,17 +352,36 @@ public class LLVMActions extends CompilatorBaseListener {
     @Override
     public void exitReadint(CompilatorParser.ReadintContext ctx) {
         String ID = ctx.ID().getText();
-        LLVMGenerator.scanfint(ID);
-        Value v = new Value("%"+(LLVMGenerator.reg-1), VarType.INT, 0);
-        localvariables.put(ID, v);
+        if(global){
+            LLVMGenerator.declare_int(ID,true);
+            LLVMGenerator.scanfint("@"+ID);
+            Value v = new Value("%"+(LLVMGenerator.reg-1), VarType.INT, 0);
+            globalvariables.put(ID, v);
+        }
+        else{
+            LLVMGenerator.declare_int(ID,false);
+            LLVMGenerator.scanfint("%"+ID);
+            Value v = new Value("%"+(LLVMGenerator.reg-1), VarType.INT, 0);
+            localvariables.put(ID, v);
+        }
+
     }
 
     @Override
     public void exitReadreal(CompilatorParser.ReadrealContext ctx) {
         String ID = ctx.ID().getText();
-        LLVMGenerator.scanfreal(ID);
-        Value v = new Value("%"+(LLVMGenerator.reg-1), VarType.REAL, 0);
-        localvariables.put(ID, v);
+        if(global){
+            LLVMGenerator.declare_real(ID,true);
+            LLVMGenerator.scanfreal("@"+ID);
+            Value v = new Value("%"+(LLVMGenerator.reg-1), VarType.INT, 0);
+            globalvariables.put(ID, v);
+        }
+        else{
+            LLVMGenerator.declare_real(ID,false);
+            LLVMGenerator.scanfreal("%"+ID);
+            Value v = new Value("%"+(LLVMGenerator.reg-1), VarType.INT, 0);
+            localvariables.put(ID, v);
+        }
     }
 
     @Override

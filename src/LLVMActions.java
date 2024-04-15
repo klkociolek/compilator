@@ -341,7 +341,11 @@ public class LLVMActions extends CompilatorBaseListener {
     @Override
     public void exitCall(CompilatorParser.CallContext ctx) {
         String ID = ctx.ID().getText();
-        LLVMGenerator.call(ID);
+        if(functions.contains(ID)){
+            LLVMGenerator.call(ID);
+        }else{
+            error(ctx.getStart().getLine(),"no such funtion");
+        }
     }
 
 

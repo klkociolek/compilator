@@ -52,7 +52,7 @@ class LLVMGenerator{
         reg++;
     }
     static void printf_bool(String id){
-        buffer += "%" + reg + " = load i1, i1* %" + id + "\n";
+        buffer += "%" + reg + " = load i1, i1* " + id + "\n";
         int boolReg = reg;  // Store the register number of the loaded boolean
         reg++;
         // Convert i1 to i32 for printing purposes

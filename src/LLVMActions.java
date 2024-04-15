@@ -169,8 +169,7 @@ public class LLVMActions extends CompilatorBaseListener {
                 stack.push( new Value("%"+(LLVMGenerator.reg-1), v.type, v.length));
             }
             else if(functions.contains(ID)){
-                LLVMGenerator.call(ID);
-                stack.push( new Value("%"+(LLVMGenerator.reg-1), VarType.FUNCTION, 0));
+                error(ctx.getStart().getLine(), "cant assign function to variable "+ID);
             }
             else {
                 error(ctx.getStart().getLine(), "unknown variable "+ID);
@@ -343,10 +342,16 @@ public class LLVMActions extends CompilatorBaseListener {
     @Override
     public void exitReadstring(CompilatorParser.ReadstringContext ctx) {
         String ID = ctx.ID().getText();
-//        Value v = new Value(ID, VarType.STRING, BUFFER_SIZE-1);
-        LLVMGenerator.scanfstring(ID, BUFFER_SIZE);
-        Value v = new Value("%"+(LLVMGenerator.reg-1), VarType.STRING, BUFFER_SIZE-1); // declaration should be after LLVMGenerator
-        localvariables.put(ID, v);
+        if(global) {
+            LLVMGenerator.scanfstring("@"+ID, BUFFER_SIZE,true);
+            Value v = new Value("%" + (LLVMGenerator.reg - 1), VarType.STRING, BUFFER_SIZE - 1); // declaration should be after LLVMGenerator
+            globalvariables.put(ID, v);
+        }
+        else{
+            LLVMGenerator.scanfstring("%"+ID,BUFFER_SIZE,false);
+            Value v = new Value("%"+(LLVMGenerator.reg-1), VarType.INT, 0);
+            localvariables.put(ID, v);
+        }
     }
 
     @Override

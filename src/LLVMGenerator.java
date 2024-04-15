@@ -65,9 +65,15 @@ class LLVMGenerator{
     }
 
 
-    static void scanfstring(String id, int l){
-        allocate_string("str"+str, l);
-        buffer += "%"+id+" = alloca i8*\n";
+    static void scanfstring(String id, int l,boolean global){
+        if( global ){
+            allocate_string("str"+str, l,true);
+            header_text += id+" = global i8*\n";
+        }
+        else {
+            allocate_string("str"+str, l,false);
+            buffer += "%"+id+" = alloca i8*\n";
+        }
         buffer += "%"+reg+" = getelementptr inbounds ["+(l+1)+" x i8], ["+(l+1)+" x i8]* %str"+str+", i64 0, i64 0\n";
         reg++;
         buffer += "store i8* %"+(reg-1)+", i8** %"+id+"\n";
@@ -119,8 +125,12 @@ class LLVMGenerator{
         }
     }
 
-    static void allocate_string(String id, int l){
-        buffer += "%"+id+" = alloca ["+(l+1)+" x i8]\n";
+    static void allocate_string(String id, int l, boolean global){
+        if(global) {
+            header_text += "@" + id + " = global [" + (l + 1) + " x i8]\n";
+        } else {
+            buffer += "%" + id + " = alloca [" + (l + 1) + " x i8]\n";
+        }
     }
 
     static void assign_int(String id, String value){
@@ -151,7 +161,7 @@ class LLVMGenerator{
         int l = content.length()+1;
         header_text += "@str"+str+" = constant ["+l+" x i8] c\""+content+"\\00\"\n";
         String n = "str"+str;
-        LLVMGenerator.allocate_string(n, (l-1));
+        LLVMGenerator.allocate_string(n, (l-1),false);
         buffer += "%"+reg+" = bitcast ["+l+" x i8]* %"+n+" to i8*\n";
         buffer += "call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %"+reg+", i8* align 1 getelementptr inbounds (["+l+" x i8], ["+l+" x i8]* @"+n+", i32 0, i32 0), i64 "+l+", i1 false)\n";
         reg++;
@@ -225,7 +235,7 @@ class LLVMGenerator{
 
 
     static void add_string(String id1, int l1, String id2, int l2){
-        allocate_string("str"+str, l1+l2);
+        allocate_string("str"+str, l1+l2,false);
         buffer += "%ptrstr"+str+" = alloca i8*\n";
         buffer += "%"+reg+" = getelementptr inbounds ["+(l1+l2+1)+" x i8], ["+(l1+l2+1)+" x i8]* %str"+str+", i64 0, i64 0\n";
         reg++;

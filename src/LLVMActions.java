@@ -38,9 +38,13 @@ public class LLVMActions extends CompilatorBaseListener {
     @Override
     public void exitFparam(CompilatorParser.FparamContext ctx) {
         String ID = ctx.ID().getText();
+        if(functions.contains(ID)){
+            error(0,"can't redefine function");
+        }else{
         functions.add(ID);
         function = ID;
         LLVMGenerator.functionstart(ID);
+        }
     }
 
     @Override
@@ -61,7 +65,9 @@ public class LLVMActions extends CompilatorBaseListener {
     }
 
     private void exitAssign0ByID(String ID, Value v, int line){
-        if(global) {
+        if(functions.contains(ID)){
+            error(line, "cant assing to funtion");
+        } else if(global) {
             if (!globalvariables.containsKey(ID)) {
                 globalvariables.put(ID, v);
                 if (v.type == VarType.INT) {
@@ -342,16 +348,11 @@ public class LLVMActions extends CompilatorBaseListener {
     @Override
     public void exitReadstring(CompilatorParser.ReadstringContext ctx) {
         String ID = ctx.ID().getText();
-        if(global) {
-            LLVMGenerator.scanfstring("@"+ID, BUFFER_SIZE,true);
-            Value v = new Value("%" + (LLVMGenerator.reg - 1), VarType.STRING, BUFFER_SIZE - 1); // declaration should be after LLVMGenerator
-            globalvariables.put(ID, v);
-        }
-        else{
-            LLVMGenerator.scanfstring("%"+ID,BUFFER_SIZE,false);
-            Value v = new Value("%"+(LLVMGenerator.reg-1), VarType.INT, 0);
-            localvariables.put(ID, v);
-        }
+
+        LLVMGenerator.scanfstring("%"+ID,BUFFER_SIZE,false);
+        Value v = new Value("%"+(LLVMGenerator.reg-1), VarType.STRING, BUFFER_SIZE - 1);
+        localvariables.put(ID, v);
+
     }
 
     @Override
@@ -378,13 +379,13 @@ public class LLVMActions extends CompilatorBaseListener {
         if(global){
             LLVMGenerator.declare_real(ID,true);
             LLVMGenerator.scanfreal("@"+ID);
-            Value v = new Value("%"+(LLVMGenerator.reg-1), VarType.INT, 0);
+            Value v = new Value("%"+(LLVMGenerator.reg-1), VarType.REAL, 0);
             globalvariables.put(ID, v);
         }
         else{
             LLVMGenerator.declare_real(ID,false);
             LLVMGenerator.scanfreal("%"+ID);
-            Value v = new Value("%"+(LLVMGenerator.reg-1), VarType.INT, 0);
+            Value v = new Value("%"+(LLVMGenerator.reg-1), VarType.REAL, 0);
             localvariables.put(ID, v);
         }
     }

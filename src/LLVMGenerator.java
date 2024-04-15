@@ -72,11 +72,11 @@ class LLVMGenerator{
         }
         else {
             allocate_string("str"+str, l,false);
-            buffer += "%"+id+" = alloca i8*\n";
+            buffer += id+" = alloca i8*\n";
         }
         buffer += "%"+reg+" = getelementptr inbounds ["+(l+1)+" x i8], ["+(l+1)+" x i8]* %str"+str+", i64 0, i64 0\n";
         reg++;
-        buffer += "store i8* %"+(reg-1)+", i8** %"+id+"\n";
+        buffer += "store i8* %"+(reg-1)+", i8** "+id+"\n";
         str++;
         buffer += "%"+reg+" = call i32 (i8*, ...) @scanf(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @strs, i32 0, i32 0), i8* %"+(reg-1)+")\n";
         reg++;

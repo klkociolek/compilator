@@ -428,13 +428,27 @@ public class LLVMActions extends CompilatorBaseListener {
     }
 
     @Override
-    public void exitNeg(CompilatorParser.NegContext ctx) {
-        Value v = stack.pop(); // Operand
-        if (v.type != VarType.BOOL) {
-            error(ctx.getStart().getLine(), "Logical NOT requires a boolean operand");
+    public void exitNeq(CompilatorParser.NeqContext ctx) {
+        // to do better
+        Value v1 = stack.pop(); // Right operand
+        Value v2 = stack.pop(); // Left operand
+        if (v1.type != VarType.INT || v2.type != VarType.INT) {
+            error(ctx.getStart().getLine(), "Logical eq requires  int values boolean operands");
         }
-        LLVMGenerator.not_boolean(v.name);
+        LLVMGenerator.neq_boolean(v1.name,v2.name);
         stack.push(new Value("%"+(LLVMGenerator.reg-1), VarType.BOOL, 0));
+    }
+
+    @Override
+    public void exitEq(CompilatorParser.EqContext ctx) {
+        Value v1 = stack.pop(); // Right operand
+        Value v2 = stack.pop(); // Left operand
+        if (v1.type != VarType.INT || v2.type != VarType.INT) {
+            error(ctx.getStart().getLine(), "Logical eq requires  int values boolean operands");
+        }
+        LLVMGenerator.equal_boolean(v1.name,v2.name);
+        stack.push(new Value("%"+(LLVMGenerator.reg-1), VarType.BOOL, 0));
+
     }
 
     @Override

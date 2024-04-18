@@ -8,6 +8,7 @@ stat:	WRITE ID		                    #write
 	| READREAL ID   		            #readreal
  	| ID '=' expr0                      #assign0
  	| ID    				            #call
+
 ;
 
 expr0:  expr0 OR expr1		            #or
@@ -22,8 +23,10 @@ expr2:  expr2 XOR expr3		            #xor
       | expr3			                #singleXor
 ;
 
-expr3:  NEG expr4		                #neg
-      | expr4			                #singleNeg
+
+expr3:  expr3 EQ expr4		            #eq
+      | expr3 NEQ expr4		            #neq
+      | expr4			                #singleEqNeq
 ;
 
 expr4:  expr4 ADD expr5		            #add
@@ -81,3 +84,5 @@ XOR: '^';
 NEG: '!';
 NEWLINE:	'\r'? '\n';
 WS:   (' '|'\t')+ -> skip;
+EQ: '==';
+NEQ: '!=';

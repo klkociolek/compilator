@@ -172,25 +172,37 @@ public class CompilatorBaseListener implements CompilatorListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterNeg(CompilatorParser.NegContext ctx) { }
+	@Override public void enterSingleEqNeq(CompilatorParser.SingleEqNeqContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitNeg(CompilatorParser.NegContext ctx) { }
+	@Override public void exitSingleEqNeq(CompilatorParser.SingleEqNeqContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterSingleNeg(CompilatorParser.SingleNegContext ctx) { }
+	@Override public void enterNeq(CompilatorParser.NeqContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitSingleNeg(CompilatorParser.SingleNegContext ctx) { }
+	@Override public void exitNeq(CompilatorParser.NeqContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterEq(CompilatorParser.EqContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitEq(CompilatorParser.EqContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -359,6 +371,7 @@ public class CompilatorBaseListener implements CompilatorListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitIblock(CompilatorParser.IblockContext ctx) { }
+
 	/**
 	 * {@inheritDoc}
 	 *

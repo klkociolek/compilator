@@ -161,29 +161,41 @@ public interface CompilatorListener extends ParseTreeListener {
 	 */
 	void exitXor(CompilatorParser.XorContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code neg}
+	 * Enter a parse tree produced by the {@code singleEqNeq}
 	 * labeled alternative in {@link CompilatorParser#expr3}.
 	 * @param ctx the parse tree
 	 */
-	void enterNeg(CompilatorParser.NegContext ctx);
+	void enterSingleEqNeq(CompilatorParser.SingleEqNeqContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code neg}
+	 * Exit a parse tree produced by the {@code singleEqNeq}
 	 * labeled alternative in {@link CompilatorParser#expr3}.
 	 * @param ctx the parse tree
 	 */
-	void exitNeg(CompilatorParser.NegContext ctx);
+	void exitSingleEqNeq(CompilatorParser.SingleEqNeqContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code singleNeg}
+	 * Enter a parse tree produced by the {@code neq}
 	 * labeled alternative in {@link CompilatorParser#expr3}.
 	 * @param ctx the parse tree
 	 */
-	void enterSingleNeg(CompilatorParser.SingleNegContext ctx);
+	void enterNeq(CompilatorParser.NeqContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code singleNeg}
+	 * Exit a parse tree produced by the {@code neq}
 	 * labeled alternative in {@link CompilatorParser#expr3}.
 	 * @param ctx the parse tree
 	 */
-	void exitSingleNeg(CompilatorParser.SingleNegContext ctx);
+	void exitNeq(CompilatorParser.NeqContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code eq}
+	 * labeled alternative in {@link CompilatorParser#expr3}.
+	 * @param ctx the parse tree
+	 */
+	void enterEq(CompilatorParser.EqContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code eq}
+	 * labeled alternative in {@link CompilatorParser#expr3}.
+	 * @param ctx the parse tree
+	 */
+	void exitEq(CompilatorParser.EqContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code add}
 	 * labeled alternative in {@link CompilatorParser#expr4}.

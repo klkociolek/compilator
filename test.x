@@ -1,9 +1,9 @@
 b=1
-flag = true
-if (flag)
-    print flag
-endif
-flag = false
-if (flag)
-    print flag
-endif
+c=2
+g=10
+if 1==2
+    print g
+    if 1==2
+        print c
+    endif
+ endif

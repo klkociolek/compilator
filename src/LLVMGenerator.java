@@ -282,11 +282,24 @@ class LLVMGenerator{
         reg++;
     }
 
+    static void neq_boolean(String val1, String val2) {
+//        for init for now
+        buffer += "%" + reg + " = icmp ne i32 " + val1 + ", " + val2 + "\n";  // Compare the two integer values for equality
+        reg++;
+    }
+
+    static void equal_boolean(String val1, String val2) {
+//        for init for now
+        buffer += "%" + reg + " = icmp eq i32 " + val1 + ", " + val2 + "\n";  // Compare the two integer values for equality
+        reg++;
+    }
+
+
+
     static void if_statement_start(String val){
         br++;
-        // Always branch to the false label, ignoring any comparison result.
-        buffer +=  "br i1 "+val+", label %true"+br+", label %false"+br+"\n"; // Directly jump to the false label.
-        buffer += "true" + br + ":\n";  // Still adding the true label for structural completeness.
+        buffer +=  "br i1 "+val+", label %true"+br+", label %false"+br+"\n";
+        buffer += "true" + br + ":\n";
         brstack.push(br);
     }
 

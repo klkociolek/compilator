@@ -1,11 +1,12 @@
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Stack;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
-enum VarType{ INT,REAL, STRING, UNKNOWN, BOOL }
+enum VarType{ INT,REAL, STRING, UNKNOWN, BOOL, FUNCTION }
 
 class Value{
     public String name;
@@ -20,41 +21,115 @@ class Value{
 
 public class LLVMActions extends CompilatorBaseListener {
 
-    HashMap<String, Value> variables = new HashMap<String, Value>();
+    HashMap<String, Value> localvariables = new HashMap<String, Value>();
+    HashMap<String, Value> globalvariables = new HashMap<String, Value>();
     Stack<Value> stack = new Stack<Value>();
+    HashSet<String> functions = new HashSet<String>();
+    String value, function;
+    Boolean global;
 
     static int BUFFER_SIZE = 16;
 
+    @Override
+    public void enterProg(CompilatorParser.ProgContext ctx) {
+        global = true;
+    }
+
+    @Override
+    public void exitFparam(CompilatorParser.FparamContext ctx) {
+        String ID = ctx.ID().getText();
+        if(functions.contains(ID)){
+            error(0,"can't redefine function");
+        }else{
+        functions.add(ID);
+        function = ID;
+        LLVMGenerator.functionstart(ID);
+        }
+    }
+
+    @Override
+    public void enterFblock(CompilatorParser.FblockContext ctx) {
+        global = false;
+    }
+
+    @Override
+    public void exitFblock(CompilatorParser.FblockContext ctx) {
+        if( ! localvariables.containsKey(function) ){
+            LLVMGenerator.declare_int(function,false);
+            LLVMGenerator.assign_int("%"+function, "0");
+        }
+        LLVMGenerator.load_int( "%"+function );
+        LLVMGenerator.functionend();
+        localvariables = new HashMap<String, Value>();
+        global = true;
+    }
+
     private void exitAssign0ByID(String ID, Value v, int line){
-        if( !variables.containsKey(ID) ) {
-            variables.put(ID, v);
-            if( v.type == VarType.INT ) {
-                LLVMGenerator.declare_int(ID);
+        if(functions.contains(ID)){
+            error(line, "cant assing to funtion");
+        } else if(global) {
+            if (!globalvariables.containsKey(ID)) {
+                globalvariables.put(ID, v);
+                if (v.type == VarType.INT) {
+                    LLVMGenerator.declare_int(ID,true);
+                }
+                if (v.type == VarType.REAL) {
+                    LLVMGenerator.declare_real(ID,true);
+                }
+                if (v.type == VarType.STRING) {
+                    LLVMGenerator.declare_string(ID,true);
+                }
+                if (v.type == VarType.BOOL) {
+                    LLVMGenerator.declare_bool(ID,true);
+                }
+            } else if (v.type != globalvariables.get(ID).type) {
+                error(line, "Reassignment of a variable is only possible for the same type");
+            }
+            if( v.type == VarType.INT ){
+                LLVMGenerator.assign_int("@"+ID, v.name);
             }
             if( v.type == VarType.REAL ){
-                LLVMGenerator.declare_real(ID);
+                LLVMGenerator.assign_real("@"+ID, v.name);
             }
             if( v.type == VarType.STRING ){
-                LLVMGenerator.declare_string(ID);
+                LLVMGenerator.assign_string("@"+ID);
             }
-            if ( v.type == VarType.BOOL ){
-                LLVMGenerator.declare_bool(ID);
+            if( v.type == VarType.BOOL ){
+                LLVMGenerator.assign_bool("@"+ID,v.name);
             }
-        } else if (v.type != variables.get(ID).type ) {
-            error(line,"Reassignment of a variable is only possible for the same type");
+        }else{
+            if (!localvariables.containsKey(ID)) {
+                localvariables.put(ID, v);
+                if (v.type == VarType.INT) {
+                    LLVMGenerator.declare_int(ID,false);
+                }
+                if (v.type == VarType.REAL) {
+                    LLVMGenerator.declare_real(ID,false);
+                }
+                if (v.type == VarType.STRING) {
+                    LLVMGenerator.declare_string(ID,false);
+                }
+                if (v.type == VarType.BOOL) {
+                    LLVMGenerator.declare_bool(ID,false);
+                }
+            } else if (v.type != localvariables.get(ID).type) {
+                error(line, "Reassignment of a variable is only possible for the same type");
+            }
+            if( v.type == VarType.INT ){
+                LLVMGenerator.assign_int("%"+ID, v.name);
+            }
+            if( v.type == VarType.REAL ){
+                LLVMGenerator.assign_real("%"+ID, v.name);
+            }
+            if( v.type == VarType.STRING ){
+                LLVMGenerator.assign_string("%"+ID);
+            }
+            if( v.type == VarType.BOOL ){
+                LLVMGenerator.assign_bool("%"+ID,v.name);
+            }
         }
-        if( v.type == VarType.INT ){
-            LLVMGenerator.assign_int(ID, v.name);
-        }
-        if( v.type == VarType.REAL ){
-            LLVMGenerator.assign_real(ID, v.name);
-        }
-        if( v.type == VarType.STRING ){
-            LLVMGenerator.assign_string(ID);
-       }
-        if( v.type == VarType.BOOL ){
-            LLVMGenerator.assign_bool(ID,v.name);
-       }
+
+
     }
 
     @Override
@@ -68,22 +143,41 @@ public class LLVMActions extends CompilatorBaseListener {
     public void exitValue(CompilatorParser.ValueContext ctx) {
         if (ctx.ID() != null && !"false".equals(ctx.ID().getText()) && !"true".equals(ctx.ID().getText())) {
             String ID = ctx.ID().getText();
-            if( variables.containsKey(ID) ) {
-                Value v = variables.get( ID );
+            if( localvariables.containsKey(ID) ) {
+                Value v = localvariables.get( ID );
                 if( v.type == VarType.INT ){
-                    LLVMGenerator.load_int( ID );
+                    LLVMGenerator.load_int("%"+ ID );
                 }
                 if( v.type == VarType.REAL ){
-                    LLVMGenerator.load_real( ID );
+                    LLVMGenerator.load_real("%"+ ID );
                 }
                 if( v.type == VarType.STRING ){
-                    LLVMGenerator.load_string( ID );
+                    LLVMGenerator.load_string( "%"+ID );
                 }
                 if( v.type == VarType.BOOL ){
-                    LLVMGenerator.load_bool( ID );
+                    LLVMGenerator.load_bool("%"+ ID );
                 }
                 stack.push( new Value("%"+(LLVMGenerator.reg-1), v.type, v.length));
-            } else {
+            }else if(globalvariables.containsKey(ID)){
+                Value v = globalvariables.get( ID );
+                if( v.type == VarType.INT ){
+                    LLVMGenerator.load_int("@"+ ID );
+                }
+                if( v.type == VarType.REAL ){
+                    LLVMGenerator.load_real( "@"+ID );
+                }
+                if( v.type == VarType.STRING ){
+                    LLVMGenerator.load_string("@"+ ID );
+                }
+                if( v.type == VarType.BOOL ){
+                    LLVMGenerator.load_bool("@"+ ID );
+                }
+                stack.push( new Value("%"+(LLVMGenerator.reg-1), v.type, v.length));
+            }
+            else if(functions.contains(ID)){
+                error(ctx.getStart().getLine(), "cant assign function to variable "+ID);
+            }
+            else {
                 error(ctx.getStart().getLine(), "unknown variable "+ID);
             }
         }
@@ -188,6 +282,7 @@ public class LLVMActions extends CompilatorBaseListener {
 
     @Override
     public void exitProg(CompilatorParser.ProgContext ctx) {
+        LLVMGenerator.close_main();
         String llvmCode = LLVMGenerator.generate();
         System.out.println(llvmCode);
         String filePath = "output.ll";
@@ -200,40 +295,56 @@ public class LLVMActions extends CompilatorBaseListener {
     }
 
     @Override
-    public void exitWrite(CompilatorParser.WriteContext exp) {
-        Value v1 = stack.pop();
-        String ID="";
-        int line = exp.start.getLine();
-        if( v1.type == VarType.INT ){
-            ID = "tmpint";
-        } else if (v1.type == VarType.REAL ) {
-            ID = "tmpreal";
-        } else if (v1.type == VarType.STRING) {
-            ID = "tmpstr";
-        } else if (v1.type == VarType.BOOL) {
-            ID = "tmpBOOL";
-        } else{
-            error(line, "unknown variable");
-        }
-        exitAssign0ByID(ID,v1,line);
-        if( variables.containsKey(ID) ) {
-            Value v = variables.get( ID );
+    public void exitWrite(CompilatorParser.WriteContext ctx) {
+        String ID = ctx.ID().getText();
+        if( globalvariables.containsKey(ID) ) {
+            Value v = globalvariables.get( ID );
             if( v.type != null ) {
                 if( v.type == VarType.INT ){
-                    LLVMGenerator.printf_int( ID );
+                    LLVMGenerator.printf_int("@"+ ID );
                 }
                 if( v.type == VarType.REAL ){
-                    LLVMGenerator.printf_real( ID );
+                    LLVMGenerator.printf_real( "@"+ID );
                 }
                 if( v.type == VarType.STRING ){
-                    LLVMGenerator.printf_string( ID );
+                    LLVMGenerator.printf_string( "@"+ID );
                 }
                 if( v.type == VarType.BOOL ){
-                    LLVMGenerator.printf_bool( ID );
+                    LLVMGenerator.printf_bool("@"+ ID );
                 }
             }
+        } else if(localvariables.containsKey(ID) ) {
+            Value v = localvariables.get(ID);
+            if (v.type != null) {
+                if (v.type == VarType.INT) {
+                    LLVMGenerator.printf_int("%"+ID);
+                }
+                if (v.type == VarType.REAL) {
+                    LLVMGenerator.printf_real("%"+ID);
+                }
+                if (v.type == VarType.STRING) {
+                    LLVMGenerator.printf_string("%"+ID);
+                }
+                if (v.type == VarType.BOOL) {
+                    LLVMGenerator.printf_bool("%"+ID);
+                }
+            }
+        }
+        else if(functions.contains(ID) ) {
+            LLVMGenerator.call(ID);
+        }
+        else{
+            error(1, "unknown variable");
+        }
+    }
+
+    @Override
+    public void exitCall(CompilatorParser.CallContext ctx) {
+        String ID = ctx.ID().getText();
+        if(functions.contains(ID)){
+            LLVMGenerator.call(ID);
         }else{
-            error(line, "unknown variable");
+            error(ctx.getStart().getLine(),"no such funtion");
         }
     }
 
@@ -241,26 +352,46 @@ public class LLVMActions extends CompilatorBaseListener {
     @Override
     public void exitReadstring(CompilatorParser.ReadstringContext ctx) {
         String ID = ctx.ID().getText();
-//        Value v = new Value(ID, VarType.STRING, BUFFER_SIZE-1);
-        LLVMGenerator.scanfstring(ID, BUFFER_SIZE);
-        Value v = new Value("%"+(LLVMGenerator.reg-1), VarType.STRING, BUFFER_SIZE-1); // declaration should be after LLVMGenerator
-        variables.put(ID, v);
-   }
+
+        LLVMGenerator.scanfstring("%"+ID,BUFFER_SIZE,false);
+        Value v = new Value("%"+(LLVMGenerator.reg-1), VarType.STRING, BUFFER_SIZE - 1);
+        localvariables.put(ID, v);
+
+    }
 
     @Override
     public void exitReadint(CompilatorParser.ReadintContext ctx) {
         String ID = ctx.ID().getText();
-        LLVMGenerator.scanfint(ID);
-        Value v = new Value("%"+(LLVMGenerator.reg-1), VarType.INT, 0);
-        variables.put(ID, v);
+        if(global){
+            LLVMGenerator.declare_int(ID,true);
+            LLVMGenerator.scanfint("@"+ID);
+            Value v = new Value("%"+(LLVMGenerator.reg-1), VarType.INT, 0);
+            globalvariables.put(ID, v);
+        }
+        else{
+            LLVMGenerator.declare_int(ID,false);
+            LLVMGenerator.scanfint("%"+ID);
+            Value v = new Value("%"+(LLVMGenerator.reg-1), VarType.INT, 0);
+            localvariables.put(ID, v);
+        }
+
     }
 
     @Override
     public void exitReadreal(CompilatorParser.ReadrealContext ctx) {
         String ID = ctx.ID().getText();
-        LLVMGenerator.scanfreal(ID);
-        Value v = new Value("%"+(LLVMGenerator.reg-1), VarType.REAL, 0);
-        variables.put(ID, v);
+        if(global){
+            LLVMGenerator.declare_real(ID,true);
+            LLVMGenerator.scanfreal("@"+ID);
+            Value v = new Value("%"+(LLVMGenerator.reg-1), VarType.REAL, 0);
+            globalvariables.put(ID, v);
+        }
+        else{
+            LLVMGenerator.declare_real(ID,false);
+            LLVMGenerator.scanfreal("%"+ID);
+            Value v = new Value("%"+(LLVMGenerator.reg-1), VarType.REAL, 0);
+            localvariables.put(ID, v);
+        }
     }
 
     @Override
@@ -305,6 +436,7 @@ public class LLVMActions extends CompilatorBaseListener {
         LLVMGenerator.not_boolean(v.name);
         stack.push(new Value("%"+(LLVMGenerator.reg-1), VarType.BOOL, 0));
     }
+
 
 
     void error(int line, String msg){

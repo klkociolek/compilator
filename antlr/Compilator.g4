@@ -1,12 +1,12 @@
 grammar Compilator;
-prog: ( stat? NEWLINE )*
-;
+prog: ( (stat|function)? NEWLINE )*;
 
-stat:	WRITE expr0		                #write
+stat:	WRITE ID		                #write
 	| READSTRING ID   		            #readstring
 	| READINT ID   		                #readint
 	| READREAL ID   		            #readreal
  	| ID '=' expr0                      #assign0
+ 	| ID    				            #call
 ;
 
 expr0:  expr0 OR expr1		            #or
@@ -46,6 +46,14 @@ value: ID
        | BOOL                            #boolVal
 ;
 
+function: FUNCTION fparam fblock ENDFUNCTION;
+
+fparam: ID;
+
+fblock: ( stat? NEWLINE )* ;
+
+FUNCTION: 'function';
+ENDFUNCTION:	'endfunction';
 WRITE:	'print ';
 READREAL:	'readr ' ;
 READINT:	'readi ' ;

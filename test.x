@@ -1,9 +1,10 @@
-b=1
+b=false
 c=2
 g=10
-if 1==2
+if 1==1
     print g
-    if 1==2
-        print c
+    d=2
+    if b
+        print d
     endif
  endif

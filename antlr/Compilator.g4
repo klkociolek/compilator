@@ -1,6 +1,6 @@
 grammar Compilator;
 
-prog: ( (stat | function | ifStatement)? NEWLINE )*;
+prog: ( (stat | function)? NEWLINE )*;
 
 stat:	WRITE ID		                    #write
 	| READSTRING ID   		            #readstring
@@ -8,7 +8,7 @@ stat:	WRITE ID		                    #write
 	| READREAL ID   		            #readreal
  	| ID '=' expr0                      #assign0
  	| ID    				            #call
-
+    | ifStatement                       #ifStmt
 ;
 
 expr0:  expr0 OR expr1		            #or

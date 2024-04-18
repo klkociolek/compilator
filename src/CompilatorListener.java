@@ -89,6 +89,18 @@ public interface CompilatorListener extends ParseTreeListener {
 	 */
 	void exitCall(CompilatorParser.CallContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code ifStmt}
+	 * labeled alternative in {@link CompilatorParser#stat}.
+	 * @param ctx the parse tree
+	 */
+	void enterIfStmt(CompilatorParser.IfStmtContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code ifStmt}
+	 * labeled alternative in {@link CompilatorParser#stat}.
+	 * @param ctx the parse tree
+	 */
+	void exitIfStmt(CompilatorParser.IfStmtContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code singleOr}
 	 * labeled alternative in {@link CompilatorParser#expr0}.
 	 * @param ctx the parse tree

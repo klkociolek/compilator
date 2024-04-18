@@ -1,10 +1,15 @@
-b=false
-c=2
-g=10
-if 1==1
-    print g
-    d=2
-    if b
-        print d
+a=true
+b=2
+if a
+    if 1==1
+        print a
+        if b==2
+            print b
+            if b!=2
+                print b
+            endif
+        endif
     endif
- endif
+endif
+
+

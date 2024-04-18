@@ -9,6 +9,7 @@ stat:	WRITE ID		                    #write
  	| ID '=' expr0                      #assign0
  	| ID    				            #call
     | ifStatement                       #ifStmt
+    | whileStatement                    #whileStmt
 ;
 
 expr0:  expr0 OR expr1		            #or
@@ -60,9 +61,14 @@ ifStatement: IF expr0 iblock ENDIF;
 
 iblock: ( stat? NEWLINE )* ;
 
+whileStatement: WHILE ID wblock ENDWHILE;
+
+wblock: ( stat? NEWLINE )* ;
 
 IF:	'if';
 ENDIF: 'endif';
+WHILE: 'while';
+ENDWHILE: 'endwhile';
 FUNCTION: 'function';
 ENDFUNCTION:	'endfunction';
 WRITE:	'print ';

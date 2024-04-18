@@ -101,6 +101,18 @@ public interface CompilatorListener extends ParseTreeListener {
 	 */
 	void exitIfStmt(CompilatorParser.IfStmtContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code whileStmt}
+	 * labeled alternative in {@link CompilatorParser#stat}.
+	 * @param ctx the parse tree
+	 */
+	void enterWhileStmt(CompilatorParser.WhileStmtContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code whileStmt}
+	 * labeled alternative in {@link CompilatorParser#stat}.
+	 * @param ctx the parse tree
+	 */
+	void exitWhileStmt(CompilatorParser.WhileStmtContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code singleOr}
 	 * labeled alternative in {@link CompilatorParser#expr0}.
 	 * @param ctx the parse tree
@@ -364,4 +376,24 @@ public interface CompilatorListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitIblock(CompilatorParser.IblockContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CompilatorParser#whileStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterWhileStatement(CompilatorParser.WhileStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CompilatorParser#whileStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitWhileStatement(CompilatorParser.WhileStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CompilatorParser#wblock}.
+	 * @param ctx the parse tree
+	 */
+	void enterWblock(CompilatorParser.WblockContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CompilatorParser#wblock}.
+	 * @param ctx the parse tree
+	 */
+	void exitWblock(CompilatorParser.WblockContext ctx);
 }

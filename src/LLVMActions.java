@@ -27,7 +27,7 @@ public class LLVMActions extends CompilatorBaseListener {
     HashSet<String> functions = new HashSet<String>();
     String value, function;
     Boolean global;
-
+    Stack<String> whileid= new Stack<String>();;
     static int BUFFER_SIZE = 16;
 
     @Override
@@ -67,7 +67,22 @@ public class LLVMActions extends CompilatorBaseListener {
     private void exitAssign0ByID(String ID, Value v, int line){
         if(functions.contains(ID)){
             error(line, "cant assing to funtion");
-        } else if(global) {
+        }else if (globalvariables.containsKey(ID)){
+            if( v.type == VarType.INT ){
+                LLVMGenerator.assign_int("@"+ID, v.name);
+            }
+            if( v.type == VarType.REAL ){
+                LLVMGenerator.assign_real("@"+ID, v.name);
+            }
+            if( v.type == VarType.STRING ){
+                LLVMGenerator.assign_string("@"+ID);
+            }
+            if( v.type == VarType.BOOL ){
+                LLVMGenerator.assign_bool("@"+ID,v.name);
+            }
+
+
+        }else if(global) {
             if (!globalvariables.containsKey(ID)) {
                 globalvariables.put(ID, v);
                 if (v.type == VarType.INT) {
@@ -455,16 +470,44 @@ public class LLVMActions extends CompilatorBaseListener {
     public void enterIblock(CompilatorParser.IblockContext ctx) {
         Value v = stack.pop(); // Operand
         if (v.type != VarType.BOOL) {
-            error(ctx.getStart().getLine(), "Logical NOT requires a boolean operand");
+            error(ctx.getStart().getLine(), "Logical  requires a boolean operand");
         }
-        System.out.println("start print");
         LLVMGenerator.if_statement_start(v.name);
     }
+
 
 
     @Override
     public void exitIblock(CompilatorParser.IblockContext ctx) {
         LLVMGenerator.if_statement_exit();
+    }
+
+    @Override
+    public void enterWhileStatement(CompilatorParser.WhileStatementContext ctx)  {
+        String ID = ctx.ID().getText();
+        boolean isDeclaredGlobally = globalvariables.containsKey(ID);
+        boolean isDeclaredLocally = localvariables.containsKey(ID);
+        if (!isDeclaredGlobally && !isDeclaredLocally) {
+            error(ctx.getStart().getLine(), "While statement needs to declare variable '" + ID + "'");
+        }
+        Value v = isDeclaredLocally ? localvariables.get(ID) : globalvariables.get(ID);
+        if (v.type != VarType.BOOL) {
+            error(ctx.getStart().getLine(), "While statement variable '" + ID + "' must be a boolean value");
+        }
+        whileid.push(ID);
+    }
+
+    @Override
+    public void enterWblock(CompilatorParser.WblockContext ctx){
+        System.out.println(globalvariables);
+        String id = whileid.pop();
+        LLVMGenerator.enter_wblock("@"+id);
+    }
+
+
+    @Override
+    public void exitWblock(CompilatorParser.WblockContext ctx) {
+        LLVMGenerator.exit_wblock();
     }
 
     void error(int line, String msg){

@@ -8,7 +8,11 @@ class LLVMGenerator{
     static String buffer = "";
     static int main_tmp = 1;
     static int br = 0;
+    static int whilebr = 0;
+
     static Stack<Integer> brstack = new Stack<Integer>();
+
+    static Stack<Integer> whilebrstack = new Stack<Integer>();
 
     static void close_main(){
         main_text += buffer;
@@ -309,6 +313,23 @@ class LLVMGenerator{
          buffer += "br label %false"+b+"\n";
          buffer += "false"+b+":\n";
 
+    }
+    static void enter_wblock(String condition) {
+        whilebr++;
+        buffer += "br label %loop" + whilebr + "\n";  // Branch to the loop start
+        buffer += "loop" + whilebr + ":\n";  // Label for the start of the loop
+        buffer += "%" + reg + " = load i1, i1* " + condition + "\n";  // Load the loop condition
+        reg++;
+        buffer += "br i1 %" + (reg - 1)  + ", label %body" + whilebr + ", label %endloop" + whilebr + "\n";  // Branch based on condition
+        buffer += "body" + whilebr + ":\n";  // Label for the loop body
+
+        whilebrstack.push(whilebr);
+    }
+
+    static void exit_wblock() {
+        int currentBr = whilebrstack.pop();
+        buffer += "br label %loop" + currentBr + "\n";  // Jump back to the loop start
+        buffer += "endloop" + currentBr + ":\n";  // Label for the end of the loop
     }
 
     static String generate(){

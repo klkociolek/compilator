@@ -320,4 +320,24 @@ public interface CompilatorListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitFblock(CompilatorParser.FblockContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CompilatorParser#ifStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterIfStatement(CompilatorParser.IfStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CompilatorParser#ifStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitIfStatement(CompilatorParser.IfStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CompilatorParser#iblock}.
+	 * @param ctx the parse tree
+	 */
+	void enterIblock(CompilatorParser.IblockContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CompilatorParser#iblock}.
+	 * @param ctx the parse tree
+	 */
+	void exitIblock(CompilatorParser.IblockContext ctx);
 }

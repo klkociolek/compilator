@@ -437,7 +437,21 @@ public class LLVMActions extends CompilatorBaseListener {
         stack.push(new Value("%"+(LLVMGenerator.reg-1), VarType.BOOL, 0));
     }
 
+    @Override
+    public void enterIblock(CompilatorParser.IblockContext ctx) {
+        Value v = stack.pop(); // Operand
+        if (v.type != VarType.BOOL) {
+            error(ctx.getStart().getLine(), "Logical NOT requires a boolean operand");
+        }
+        System.out.println("start print");
+        LLVMGenerator.if_statement_start(v.name);
+    }
 
+
+    @Override
+    public void exitIblock(CompilatorParser.IblockContext ctx) {
+        LLVMGenerator.if_statement_exit();
+    }
 
     void error(int line, String msg){
         System.err.println("Error, line "+line+", "+msg);

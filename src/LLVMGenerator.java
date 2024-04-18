@@ -1,3 +1,4 @@
+import java.util.Stack;
 class LLVMGenerator{
 
     static String header_text = "";
@@ -6,6 +7,8 @@ class LLVMGenerator{
     static int str = 1;
     static String buffer = "";
     static int main_tmp = 1;
+    static int br = 0;
+    static Stack<Integer> brstack = new Stack<Integer>();
 
     static void close_main(){
         main_text += buffer;
@@ -256,7 +259,7 @@ class LLVMGenerator{
 
     static void and_boolean(String val1, String val2) {
         // Generate LLVM IR code for the boolean AND operation
-        buffer += "%"+reg+" = and i1 "+val2+", "+val2+"\n";  // AND the results of the comparisons
+        buffer += "%"+reg+" = and i1 "+val1+", "+val2+"\n";  // AND the results of the comparisons
         reg++;
     }
 
@@ -279,6 +282,21 @@ class LLVMGenerator{
         reg++;
     }
 
+    static void if_statement_start(String val){
+        br++;
+        // Always branch to the false label, ignoring any comparison result.
+        buffer +=  "br i1 "+val+", label %true"+br+", label %false"+br+"\n"; // Directly jump to the false label.
+        buffer += "true" + br + ":\n";  // Still adding the true label for structural completeness.
+        brstack.push(br);
+    }
+
+
+    static void if_statement_exit(){
+         int b = brstack.pop();
+         buffer += "br label %false"+b+"\n";
+         buffer += "false"+b+":\n";
+
+    }
 
     static String generate(){
         String text = "";

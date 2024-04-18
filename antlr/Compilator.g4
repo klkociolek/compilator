@@ -1,7 +1,8 @@
 grammar Compilator;
-prog: ( (stat|function)? NEWLINE )*;
 
-stat:	WRITE ID		                #write
+prog: ( (stat | function | ifStatement)? NEWLINE )*;
+
+stat:	WRITE ID		                    #write
 	| READSTRING ID   		            #readstring
 	| READINT ID   		                #readint
 	| READREAL ID   		            #readreal
@@ -52,6 +53,13 @@ fparam: ID;
 
 fblock: ( stat? NEWLINE )* ;
 
+ifStatement: IF expr0 iblock ENDIF;
+
+iblock: ( stat? NEWLINE )* ;
+
+
+IF:	'if';
+ENDIF: 'endif';
 FUNCTION: 'function';
 ENDFUNCTION:	'endfunction';
 WRITE:	'print ';

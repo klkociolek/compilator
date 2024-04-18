@@ -11,68 +11,26 @@ declare void @llvm.memcpy.p0i8.p0i8.i64(i8* noalias nocapture writeonly, i8* noa
 @strpi = constant [4 x i8] c"%d\0A\00"
 @strs = constant [5 x i8] c"%10s\00"
 @strspi = constant [3 x i8] c"%d\00"
-@str1 = constant [4 x i8] c"ala\00"
-@a = global i8 0
-@str2 = constant [4 x i8] c"ala\00"
-define i32 @fun() {
-%str2 = alloca [4 x i8]
-%1 = bitcast [4 x i8]* %str2 to i8*
-call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %1, i8* align 1 getelementptr inbounds ([4 x i8], [4 x i8]* @str2, i32 0, i32 0), i64 4, i1 false)
-%ptrstr2 = alloca i8*
-%2 = getelementptr inbounds [4 x i8], [4 x i8]* %str2, i64 0, i64 0
-store i8* %2, i8** %ptrstr2
-%3 = load i8*, i8** @a
-%str3 = alloca [7 x i8]
-%ptrstr3 = alloca i8*
-%4 = getelementptr inbounds [7 x i8], [7 x i8]* %str3, i64 0, i64 0
-store i8* %4, i8** %ptrstr3
-%5 = load i8*, i8** %ptrstr3
-%6 = call i8* @strcpy(i8* %5, i8* %2)
-%7 = call i8* @strcat(i8* %5, i8* %3)
-%x = alloca i8
-store i8* %7, i8** %x
-%8 = load i8*, i8** %x
-%9 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strps, i32 0, i32 0), i8* %8)
-%fun = alloca i32
-store i32 0, i32* %fun
-%10 = load i32, i32* %fun
-ret i32 %10
-}
-define i32 @func() {
-%1 = add i32 2, 1
-%x = alloca i32
-store i32 %1, i32* %x
-%2 = load i32, i32* %x
-%3 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpi, i32 0, i32 0), i32 %2)
-%func = alloca i32
-store i32 0, i32* %func
-%4 = load i32, i32* %func
-ret i32 %4
-}
-@s = global i32 0
-define i32 @funcc() {
-%1 = load i32, i32* @s
-%2 = add i32 %1, 1
-%ss = alloca i32
-store i32 %2, i32* %ss
-%3 = load i32, i32* %ss
-%4 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpi, i32 0, i32 0), i32 %3)
-%funcc = alloca i32
-store i32 0, i32* %funcc
-%5 = load i32, i32* %funcc
-ret i32 %5
-}
+@b = global i32 0
+@flag = global i1 0
 define i32 @main(){
-%str1 = alloca [4 x i8]
-%1 = bitcast [4 x i8]* %str1 to i8*
-call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 1 %1, i8* align 1 getelementptr inbounds ([4 x i8], [4 x i8]* @str1, i32 0, i32 0), i64 4, i1 false)
-%ptrstr1 = alloca i8*
-%2 = getelementptr inbounds [4 x i8], [4 x i8]* %str1, i64 0, i64 0
-store i8* %2, i8** %ptrstr1
-store i8* %2, i8** @a
-%3 = call i32 @fun()
-%4 = call i32 @func()
-%5 = call i32 @fun()
-%6 = call i32 (i8*, ...) @scanf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @strspi, i32 0, i32 0), i32* @s)
-%7 = call i32 @funcc()
+store i32 1, i32* @b
+store i1 1, i1* @flag
+%1 = load i1, i1* @flag
+br i1 %1, label %true1, label %false1
+true1:
+%2 = load i1, i1* @flag
+%3 = zext i1 %2 to i32
+%4 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpi, i32 0, i32 0), i32 %3)
+br label %false1
+false1:
+store i1 0, i1* @flag
+%5 = load i1, i1* @flag
+br i1 %5, label %true2, label %false2
+true2:
+%6 = load i1, i1* @flag
+%7 = zext i1 %6 to i32
+%8 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpi, i32 0, i32 0), i32 %7)
+br label %false2
+false2:
 ret i32 0 }
